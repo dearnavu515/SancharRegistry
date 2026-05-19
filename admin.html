@@ -230,18 +230,18 @@
                 const row = [
                     emp.id,
                     `"${emp.name.replace(/"/g, '""')}"`,
-                    `"${emp.hr_number}"`,
+                    `="${emp.hr_number}"`,
                     `"${emp.designation.replace(/"/g, '""')}"`,
-                    emp.dob,
-                    emp.blood_group,
-                    emp.pan_number,
-                    emp.date_of_issue,
+                    `="${emp.dob}"`,
+                    `"${emp.blood_group}"`,
+                    `="${emp.pan_number}"`,
+                    `="${emp.date_of_issue}"`,
                     `"${emp.office_address.replace(/"/g, '""')}"`,
-                    `"${emp.tel_office || ''}"`,
-                    `"${emp.tel_residence || ''}"`,
-                    `"${emp.tel_mobile}"`,
-                    hasSig,
-                    new Date(emp.created_at + 'Z').toLocaleString()
+                    emp.tel_office ? `="${emp.tel_office}"` : '""',
+                    emp.tel_residence ? `="${emp.tel_residence}"` : '""',
+                    `="${emp.tel_mobile}"`,
+                    `"${hasSig}"`,
+                    `"${new Date(emp.created_at + 'Z').toLocaleString().replace(/"/g, '""')}"`
                 ];
                 csvRows.push(row.join(","));
             });

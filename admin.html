@@ -81,21 +81,6 @@
             background-color: #fca5a5;
             color: white;
         }
-        .btn-export {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-        .btn-export:hover {
-            background-color: #059669;
-        }
         .sig-preview {
             max-height: 35px;
             max-width: 90px;
@@ -115,10 +100,7 @@
 
 <body>
     <div class="admin-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h1 style="margin: 0; color: #0056b3;">BSNL Employee Database</h1>
-            <button id="exportBtn" class="btn-export" onclick="exportToCSV()" style="display: none;">Export to CSV</button>
-        </div>
+        <h1>BSNL Employee Database</h1>
         <div id="statusMessage" class="status">Loading data from SQLite...</div>
 
         <table id="dataTable">
@@ -145,28 +127,22 @@
     </div>
 
     <script>
-        let currentEmployeeData = [];
-
         async function loadData() {
             const tableBody = document.getElementById('tableBody');
             const statusMessage = document.getElementById('statusMessage');
 
             tableBody.innerHTML = ''; // Clear table before loading
-            document.getElementById('exportBtn').style.display = 'none';
 
             try {
                 const response = await fetch('http://localhost:3000/api/employees');
                 if (!response.ok) throw new Error("Server disconnected");
 
                 const data = await response.json();
-                currentEmployeeData = data;
 
                 if (data.length === 0) {
                     statusMessage.textContent = "Database is currently empty.";
                     return;
                 }
-
-                document.getElementById('exportBtn').style.display = 'block';
 
                 statusMessage.textContent = `Successfully loaded ${data.length} employee records.`;
                 statusMessage.style.background = '#dcfce7';
@@ -217,44 +193,6 @@
                 console.error("Error deleting:", error);
                 alert("An error occurred while deleting the record.");
             }
-        };
-
-        window.exportToCSV = function () {
-            if (currentEmployeeData.length === 0) return;
-
-            const headers = ["ID", "Name", "HR Number", "Designation", "Date of Birth", "Blood Group", "PAN Number", "Date of Issue", "Office Address", "Office Tel", "Residence Tel", "Mobile Tel", "Has Signature", "Submitted At"];
-            let csvRows = [headers.join(",")];
-
-            currentEmployeeData.forEach(emp => {
-                const hasSig = emp.signature_image ? "Yes" : "No";
-                const row = [
-                    emp.id,
-                    `"${emp.name.replace(/"/g, '""')}"`,
-                    `="${emp.hr_number}"`,
-                    `"${emp.designation.replace(/"/g, '""')}"`,
-                    `="${emp.dob}"`,
-                    `"${emp.blood_group}"`,
-                    `="${emp.pan_number}"`,
-                    `="${emp.date_of_issue}"`,
-                    `"${emp.office_address.replace(/"/g, '""')}"`,
-                    emp.tel_office ? `="${emp.tel_office}"` : '""',
-                    emp.tel_residence ? `="${emp.tel_residence}"` : '""',
-                    `="${emp.tel_mobile}"`,
-                    `"${hasSig}"`,
-                    `"${new Date(emp.created_at + 'Z').toLocaleString().replace(/"/g, '""')}"`
-                ];
-                csvRows.push(row.join(","));
-            });
-
-            const csvContent = csvRows.join("\n");
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `BSNL_Employees_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         };
 
         document.addEventListener('DOMContentLoaded', loadData);

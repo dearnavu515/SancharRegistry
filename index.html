@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Information Portal</title>
+    <meta name="description"
+        content="Secure portal for submitting employee details including personal, professional, and contact information.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+
+<body>
+    <div class="official-bg"></div>
+
+    <main class="container">
+        <div class="form-wrapper">
+            <header class="form-header">
+                <div class="logo-container">
+                    <div class="bsnl-logo">
+                        <div class="logo-arrows">
+                            <span class="arrow-up"></span>
+                            <span class="arrow-down"></span>
+                        </div>
+                        <span class="logo-text">BSNL</span>
+                    </div>
+                </div>
+                <h1>Employee Registration Portal</h1>
+                <p>Bharat Sanchar Nigam Limited</p>
+                <div class="header-divider"></div>
+            </header>
+
+            <form id="employee-form" action="#" method="POST">
+
+                <section class="form-section highlight-section" id="ocr-section">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                            <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+                        </svg>
+                        ID Card Auto-Fill
+                    </h2>
+                    <p class="section-desc">Upload clear images of your ID card to automatically fill the form.</p>
+
+                    <div class="upload-grid">
+                        <div class="upload-zone" id="upload-front-zone">
+                            <input type="file" id="id-front" accept="image/*" class="file-input">
+                            <label for="id-front" class="upload-label">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bsnl-blue)"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>Upload Front of ID</span>
+                                <small>JPG, PNG only</small>
+                            </label>
+                            <div class="preview-container">
+                                <img id="preview-front" src="" alt="ID Front Preview">
+                                <button type="button" class="remove-btn" onclick="removeImage('front')">×</button>
+                            </div>
+                        </div>
+
+                        <div class="upload-zone" id="upload-back-zone">
+                            <input type="file" id="id-back" accept="image/*" class="file-input">
+                            <label for="id-back" class="upload-label">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bsnl-blue)"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>Upload Back of ID</span>
+                                <small>JPG, PNG only</small>
+                            </label>
+                            <div class="preview-container">
+                                <img id="preview-back" src="" alt="ID Back Preview">
+                                <button type="button" class="remove-btn" onclick="removeImage('back')">×</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ocr-actions">
+                        <button type="button" id="start-ocr-btn" class="secondary-btn" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Start Auto-Fill
+                        </button>
+                        <div id="ocr-status" class="ocr-status">
+                            <div class="spinner-small"></div>
+                            <span id="ocr-status-text">Processing images...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Personal Information</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <input type="text" id="name" name="name" required placeholder=" ">
+                            <label for="name">Full Name</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="date" id="dob" name="dob" required placeholder=" ">
+                            <label for="dob">Date of Birth</label>
+                        </div>
+                        <div class="input-group">
+                            <select id="blood-group" name="blood-group" required>
+                                <option value="" disabled selected>Select Blood Group</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                            <label for="blood-group" class="select-label">Blood Group</label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Professional Details</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <input type="text" id="designation" name="designation" required placeholder=" ">
+                            <label for="designation">Designation</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="hr-number" name="hr-number" required placeholder=" ">
+                            <label for="hr-number">HR Number</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="pan-number" name="pan-number" required placeholder=" "
+                                pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Format: ABCDE1234F">
+                            <label for="pan-number">PAN Number</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="date" id="date-of-issue" name="date-of-issue" required placeholder=" ">
+                            <label for="date-of-issue">Date of Issue </label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Contact Information</h2>
+                    <div class="input-group full-width">
+                        <textarea id="office-address" name="office-address" rows="3" required
+                            placeholder=" "></textarea>
+                        <label for="office-address">Office Address</label>
+                    </div>
+
+                    <div class="input-grid three-cols">
+                        <div class="input-group">
+                            <input type="tel" id="tel-office" name="tel-office" placeholder=" ">
+                            <label for="tel-office">Telephone (Office)</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="tel-residence" name="tel-residence" placeholder=" ">
+                            <label for="tel-residence">Telephone (Residence)</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="tel-mobile" name="tel-mobile" required placeholder=" ">
+                            <label for="tel-mobile">Telephone (Mobile)</label>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <span>Submit Details</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -80,10 +80,11 @@ SancharRegistry/
 ```
 
 ### File Details:
-- **`server.js`**: Connects to `database.sqlite`. If the table does not exist, it runs `CREATE TABLE` setup. Handles routes:
-  - `GET /api/employees`: Fetches registration records.
-  - `POST /api/employees`: Validates data, extracts parameters (and the signature image string), and inserts a record.
-  - `DELETE /api/employees/:id`: Safely deletes a database entry.
+- **`server.js`**: Operates as the Node.js Express server handling core database interactions:
+  - **Database Initialization**: On launch, it opens/creates the `database.sqlite` file and automatically runs the schema migration (`CREATE TABLE IF NOT EXISTS employees`) to ensure the table structure is ready.
+  - **Save Route (`POST /api/employees`)**: Parses the incoming JSON payload (including the Base64 signature image string) and executes a parameterized SQL `INSERT` statement to safely register the record without vulnerability to SQL injection.
+  - **List Route (`GET /api/employees`)**: Queries all employee rows ordered by submission date (`ORDER BY created_at DESC`) and returns them as a JSON list to feed the admin table.
+  - **Delete Route (`DELETE /api/employees/:id`)**: Parses the unique ID parameter and executes `DELETE FROM employees WHERE id = ?` to remove rows on admin confirmation.
 - **`index.html`**: Structures the registration layout. Includes floating label fields, three preview upload zones (Front ID, Back ID, Signature), and progress status indicators for OCR.
 - **`script.js`**:
   - Implements the form submit listener, converting data to JSON payload.

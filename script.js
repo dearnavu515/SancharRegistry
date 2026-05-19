@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            data.signature_image = signatureBase64;
 
             const response = await fetch('http://localhost:3000/api/employees', {
                 method: 'POST',
@@ -29,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 setTimeout(() => {
                     form.reset();
+                    // Remove all previews
+                    removeImage('front');
+                    removeImage('back');
+                    removeImage('signature');
                     dateInputs.forEach(input => input.classList.remove('has-value'));
                     submitBtn.innerHTML = originalContent;
                     submitBtn.style.backgroundColor = '';
@@ -61,12 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- OCR Auto-Fill Logic ---
     const idFrontInput = document.getElementById('id-front');
     const idBackInput = document.getElementById('id-back');
+    const idSignatureInput = document.getElementById('id-signature');
     const startOcrBtn = document.getElementById('start-ocr-btn');
     const ocrStatus = document.getElementById('ocr-status');
     const ocrStatusText = document.getElementById('ocr-status-text');
     
-    let uploadedImages = { front: null, back: null };
-
+    let uploadedImages = { front: null, back: null, signature: null };
+    let signatureBase64 = '';
+ 
     function handleFileUpload(event, side) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
@@ -79,16 +86,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewImg.src = e.target.result;
                 previewContainer.classList.add('active');
                 
-                // Enable OCR button if at least one image is uploaded
-                startOcrBtn.disabled = false;
+                if (side === 'signature') {
+                    signatureBase64 = e.target.result;
+                } else {
+                    // Enable OCR button if at least one image is uploaded
+                    startOcrBtn.disabled = false;
+                }
+
+                if (side === 'front') {
+                    extractSignatureFromFront(e.target.result);
+                }
             }
             
             reader.readAsDataURL(file);
         }
     }
 
+    function extractSignatureFromFront(base64Image) {
+        const img = new Image();
+        img.src = base64Image;
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Standard BSNL / official ID card format has signatures on the bottom row.
+            // We crop the bottom 25% of the card height, right 45% of width.
+            const cropX = img.width * 0.55;
+            const cropY = img.height * 0.75;
+            const cropW = img.width * 0.45;
+            const cropH = img.height * 0.25;
+            
+            canvas.width = cropW;
+            canvas.height = cropH;
+            
+            ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+            
+            const croppedBase64 = canvas.toDataURL('image/png');
+            
+            const previewContainer = document.querySelector('#upload-signature-zone .preview-container');
+            const previewImg = document.getElementById('preview-signature');
+            previewImg.src = croppedBase64;
+            previewContainer.classList.add('active');
+            signatureBase64 = croppedBase64;
+        };
+    }
+ 
     idFrontInput.addEventListener('change', (e) => handleFileUpload(e, 'front'));
     idBackInput.addEventListener('change', (e) => handleFileUpload(e, 'back'));
+    idSignatureInput.addEventListener('change', (e) => handleFileUpload(e, 'signature'));
 
     // Global function for remove button
     window.removeImage = function(side) {
@@ -98,6 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const previewImg = document.getElementById(`preview-${side}`);
         previewImg.src = '';
         previewContainer.classList.remove('active');
+        
+        if (side === 'signature') {
+            signatureBase64 = '';
+        }
         
         if (!uploadedImages.front && !uploadedImages.back) {
             startOcrBtn.disabled = true;

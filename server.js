@@ -38,6 +38,7 @@ function initDB() {
             tel_office TEXT,
             tel_residence TEXT,
             tel_mobile TEXT NOT NULL,
+            signature_image TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `;
@@ -84,18 +85,19 @@ app.post('/api/employees', (req, res) => {
         name, dob, 'blood-group': bloodGroup, designation, 
         'hr-number': hrNumber, 'pan-number': panNumber, 
         'date-of-issue': dateOfIssue, 'office-address': officeAddress,
-        'tel-office': telOffice, 'tel-residence': telResidence, 'tel-mobile': telMobile
+        'tel-office': telOffice, 'tel-residence': telResidence, 'tel-mobile': telMobile,
+        signature_image
     } = req.body;
 
     const insertQuery = `
         INSERT INTO employees 
-        (name, dob, blood_group, designation, hr_number, pan_number, date_of_issue, office_address, tel_office, tel_residence, tel_mobile) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (name, dob, blood_group, designation, hr_number, pan_number, date_of_issue, office_address, tel_office, tel_residence, tel_mobile, signature_image) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const values = [
         name, dob, bloodGroup, designation, hrNumber, panNumber, dateOfIssue, 
-        officeAddress, telOffice || null, telResidence || null, telMobile
+        officeAddress, telOffice || null, telResidence || null, telMobile, signature_image || null
     ];
 
     db.run(insertQuery, values, function(err) {

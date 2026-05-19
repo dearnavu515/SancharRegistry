@@ -90,6 +90,23 @@
                                 <button type="button" class="remove-btn" onclick="removeImage('back')">×</button>
                             </div>
                         </div>
+
+                        <div class="upload-zone" id="upload-signature-zone">
+                            <input type="file" id="id-signature" accept="image/*" class="file-input">
+                            <label for="id-signature" class="upload-label">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bsnl-blue)"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                                <span>Signature Image</span>
+                                <small>Auto-extracted or upload manually</small>
+                            </label>
+                            <div class="preview-container">
+                                <img id="preview-signature" src="" alt="Signature Preview">
+                                <button type="button" class="remove-btn" onclick="removeImage('signature')">×</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="ocr-actions">

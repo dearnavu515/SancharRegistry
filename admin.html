@@ -81,6 +81,20 @@
             background-color: #fca5a5;
             color: white;
         }
+        .sig-preview {
+            max-height: 35px;
+            max-width: 90px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            transition: transform 0.2s;
+        }
+        .sig-preview:hover {
+            transform: scale(3.5);
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
     </style>
 </head>
 
@@ -101,6 +115,7 @@
                     <th>PAN</th>
                     <th>Date Issued</th>
                     <th>Mobile</th>
+                    <th>Signature</th>
                     <th>Submitted At</th>
                     <th>Action</th>
                 </tr>
@@ -145,6 +160,9 @@
                         <td>${emp.pan_number}</td>
                         <td>${emp.date_of_issue}</td>
                         <td>${emp.tel_mobile}</td>
+                        <td>
+                            ${emp.signature_image ? `<img class="sig-preview" src="${emp.signature_image}" alt="Signature">` : '<span style="color:#999; font-style:italic;">No image</span>'}
+                        </td>
                         <td>${new Date(emp.created_at + 'Z').toLocaleString()}</td>
                         <td><button class="delete-btn" onclick="deleteEmployee(${emp.id})">Delete</button></td>
                     `;

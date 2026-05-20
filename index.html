@@ -9,14 +9,14 @@
         content="Secure portal for submitting employee details including personal, professional, and contact information.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <!-- Tesseract.js for OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 
 <body>
-    <div style="background-color: #fffbeb; color: #b45309; padding: 12px; text-align: center; font-weight: 600; border-bottom: 1px solid #fde68a; font-size: 0.85rem; font-family: 'Inter', sans-serif; position: absolute; top: 0; left: 0; width: 100%; z-index: 1000;">
+    <div
+        style="background-color: #fffbeb; color: #b45309; padding: 12px; text-align: center; font-weight: 600; border-bottom: 1px solid #fde68a; font-size: 0.85rem; font-family: 'Inter', sans-serif; position: absolute; top: 0; left: 0; width: 100%; z-index: 1000;">
         ⚠️ DEMO ONLY: This is a student/project demonstration and NOT the official BSNL Employee Portal.
     </div>
     <div class="official-bg"></div>
@@ -24,7 +24,7 @@
     <main class="container">
         <div class="form-wrapper">
             <header class="form-header">
-                <div class="logo-container">
+                <div class="logo-container">   
                     <div class="bsnl-logo">
                         <div class="logo-arrows">
                             <span class="arrow-up"></span>
@@ -90,23 +90,6 @@
                                 <button type="button" class="remove-btn" onclick="removeImage('back')">×</button>
                             </div>
                         </div>
-
-                        <div class="upload-zone" id="upload-signature-zone">
-                            <input type="file" id="id-signature" accept="image/*" class="file-input">
-                            <label for="id-signature" class="upload-label">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bsnl-blue)"
-                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 20h9"></path>
-                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                </svg>
-                                <span>Signature Image</span>
-                                <small>Auto-extracted or upload manually</small>
-                            </label>
-                            <div class="preview-container">
-                                <img id="preview-signature" src="" alt="Signature Preview">
-                                <button type="button" class="remove-btn" onclick="removeImage('signature')">×</button>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="ocr-actions">
@@ -134,20 +117,6 @@
                         <div class="input-group">
                             <input type="date" id="dob" name="dob" required placeholder=" ">
                             <label for="dob">Date of Birth</label>
-                        </div>
-                        <div class="input-group">
-                            <select id="blood-group" name="blood-group" required>
-                                <option value="" disabled selected>Select Blood Group</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                            </select>
-                            <label for="blood-group" class="select-label">Blood Group</label>
                         </div>
                     </div>
                 </section>
@@ -179,7 +148,7 @@
                     <h2>Contact Information</h2>
                     <div class="input-group full-width">
                         <textarea id="office-address" name="office-address" rows="3" required
-                            placeholder=" "></textarea>
+                            placeholder=" " class="has-value">RTTC TVM</textarea>
                         <label for="office-address">Office Address</label>
                     </div>
 

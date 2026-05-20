@@ -4,12 +4,13 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
 // --- DATABASE CONFIGURATION (SQLite) ---
 const dbPath = path.join(__dirname, 'database.sqlite');
@@ -29,7 +30,6 @@ function initDB() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             dob TEXT NOT NULL,
-            blood_group TEXT NOT NULL,
             designation TEXT NOT NULL,
             hr_number TEXT NOT NULL,
             pan_number TEXT NOT NULL,
@@ -67,8 +67,8 @@ app.get('/api/employees', (req, res) => {
 app.delete('/api/employees/:id', (req, res) => {
     const { id } = req.params;
     const deleteQuery = "DELETE FROM employees WHERE id = ?";
-    
-    db.run(deleteQuery, id, function(err) {
+
+    db.run(deleteQuery, id, function (err) {
         if (err) {
             console.error("Error deleting data:", err.message);
             res.status(500).json({ error: "Failed to delete employee details." });
@@ -82,8 +82,8 @@ app.delete('/api/employees/:id', (req, res) => {
 
 app.post('/api/employees', (req, res) => {
     const {
-        name, dob, 'blood-group': bloodGroup, designation, 
-        'hr-number': hrNumber, 'pan-number': panNumber, 
+        name, dob, designation,
+        'hr-number': hrNumber, 'pan-number': panNumber,
         'date-of-issue': dateOfIssue, 'office-address': officeAddress,
         'tel-office': telOffice, 'tel-residence': telResidence, 'tel-mobile': telMobile,
         signature_image
@@ -91,23 +91,23 @@ app.post('/api/employees', (req, res) => {
 
     const insertQuery = `
         INSERT INTO employees 
-        (name, dob, blood_group, designation, hr_number, pan_number, date_of_issue, office_address, tel_office, tel_residence, tel_mobile, signature_image) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (name, dob, designation, hr_number, pan_number, date_of_issue, office_address, tel_office, tel_residence, tel_mobile, signature_image) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    
+
     const values = [
-        name, dob, bloodGroup, designation, hrNumber, panNumber, dateOfIssue, 
+        name, dob, designation, hrNumber, panNumber, dateOfIssue,
         officeAddress, telOffice || null, telResidence || null, telMobile, signature_image || null
     ];
 
-    db.run(insertQuery, values, function(err) {
+    db.run(insertQuery, values, function (err) {
         if (err) {
             console.error("Error inserting data:", err.message);
             res.status(500).json({ error: "Failed to save employee details." });
         } else {
-            res.status(201).json({ 
-                message: "Employee details saved successfully", 
-                employeeId: this.lastID 
+            res.status(201).json({
+                message: "Employee details saved successfully",
+                employeeId: this.lastID
             });
         }
     });

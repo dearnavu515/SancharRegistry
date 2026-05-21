@@ -182,9 +182,7 @@ body {
     gap: 1.25rem 1.5rem;
 }
 
-.input-grid.three-cols {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
+
 
 .full-width {
     width: 100%;
@@ -518,12 +516,30 @@ body {
         padding: 1.5rem;
     }
     
-    .input-grid, .input-grid.three-cols {
-        grid-template-columns: 1fr;
-    }
+   
     
     .submit-btn {
         width: 100%;
         justify-content: center;
     }
+    /* This makes sure the mobile box stretches nicely */
+/* Update this in your CSS */
+.input-grid {
+    display: grid;
+    /* This will fit as many as possible, but default to 1 big one */
+    grid-template-columns: 1fr; 
+    gap: 1.25rem;
+}
+
+/* This makes sure the mobile input looks prominent */
+#tel-mobile {
+    height: 50px; /* A bit taller for easier mobile tapping */
+    font-size: 1rem;
+}
+
+}
+/* Add this to your styles.css to make sure text is always visible */
+input {
+    color: #1f2937 !important; /* A nice dark grey-black */
+    font-weight: 500;
 }

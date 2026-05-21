@@ -97,9 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     startOcrBtn.disabled = false;
                 }
 
-                if (side === 'front') {
-                    extractSignatureFromFront(base64);
-                }
             };
 
             reader.readAsDataURL(file);
@@ -130,12 +127,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /// Simple pass-through filter (Removes monochrome processing)
-    function preprocessFrontImage(base64Image) {
-        return new Promise((resolve) => {
-            // Just pass the original image straight to Tesseract
-            resolve(base64Image);
-        });
-    }
+   async function preprocessFrontImage(base64Image) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = base64Image;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Apply high contrast and grayscale
+            ctx.filter = 'grayscale(100%) contrast(200%) brightness(110%)';
+            ctx.drawImage(img, 0, 0);
+            
+            // Return as high-quality JPEG
+            resolve(canvas.toDataURL('image/jpeg', 1.0));
+        };
+    });
+}
 
     // OCR Processing
     startOcrBtn.addEventListener('click', async () => {
@@ -206,9 +216,23 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("OCR Normalized:", normalized);
 
         function setField(id, value) {
-            const el = document.getElementById(id);
-            if (el && value) { el.value = value; el.classList.add('has-value'); }
-        }
+    const el = document.getElementById(id);
+    
+    // THE DETECTIVE LINE:
+    console.log("Robot is trying to find box ID:", id, "and put this inside:", value);
+    
+    if (el) {
+        el.value = value;
+        el.classList.add('has-value');
+
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+
+    } else {
+        // If you see this error, it means the ID name in your HTML is different!
+        console.error("OH NO! The robot couldn't find the box named:", id);
+    }
+}
 
         // 1. PAN Number
         let panMatch = normalized.match(/(?:PAN|Pan\s*No|Pan\s*Number)[\s\.:]*([A-Z]{5}[0-9]{4}[A-Z])/i)
@@ -234,96 +258,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         
-        // 3. Blood Group - Dropdown Matching Fix
-       let bgGroup = null, bgSign = '+';
-        if (/[AR]rve/i.test(normalized) || /Boog/i.test(normalized)) {
-            bgGroup = 'A';
-            bgSign = '+';
-        }
-
-        if (bgGroup) {
-            const bgSelect = document.getElementById('blood-group');
-            if (bgSelect) {
-                for (let i = 0; i < bgSelect.options.length; i++) {
-                    const optionValue = bgSelect.options[i].value.toUpperCase();
-                    const optionText = bgSelect.options[i].text.toUpperCase();
-                    if (optionValue.includes('A') && (optionValue.includes('+') || optionValue.includes('POS') || optionValue.includes('VE')) ||
-                        optionText.includes('A') && (optionText.includes('+') || optionText.includes('POS') || optionText.includes('VE'))) {
-                        bgSelect.selectedIndex = i; 
-                        bgSelect.classList.add('has-value');
-                        break;
-                    }
-                }
-            }
-        }
+        
 
         // 4. HR Number
-        const hrMatch = normalized.match(/(?:HR\.?\s*NO|HR|EMP)[\s\.:]*(\d{6,10})/i);
-        if (hrMatch) setField('hr-number', hrMatch[1]);
+        const hrMatch = normalized.match(/(?:HR\.?\s*NO|EMP\.?\s*NO|ID\.?\s*NO|HR|EMP)[\s\.:]*(\d{9})/i);        if (hrMatch) setField('hr-number', hrMatch[1]);
+// 5. Smart Dictionary Name Finder
+const designationInLine = /\b(JTO|SDE|AOS|JE|JAO|AO|DGM|GM|AGM|DET|CAO|EE|SE|ASE)\b/i;
+let designation = '', name = '';
+let desigLineIdx = -1;
 
-       // 5. Smart Dictionary Name Finder
-        const designationInLine = /\b(JTO|SDE|JE|JAO|AO|DGM|GM|AGM|DET|CAO|EE|SE|ASE)\b/i;
-        let designation = '', name = '';
-        let desigLineIdx = -1;
+for (let i = 0; i < lines.length; i++) {
+    if (designationInLine.test(lines[i])) {
+        desigLineIdx = i;
+        const match = lines[i].match(designationInLine);
+        designation = match[1].toUpperCase();
+        break;
+    }
+}
 
-        for (let i = 0; i < lines.length; i++) {
-            if (designationInLine.test(lines[i])) {
-                desigLineIdx = i;
-                const match = lines[i].match(designationInLine);
-                designation = match[1].toUpperCase();
-                break;
-            }
-        }
+if (desigLineIdx > 0) {
+    let currentLine = lines[desigLineIdx - 1].trim();
+    currentLine = currentLine.replace(/(?:OFFICE|OF|THE|CGM|BSNL|TRIVANDRUM|KERALA|CIRCLE|TVM)/ig, '');
+    name = currentLine.replace(/[^A-Za-z\s\.]/g, '').replace(/\s+/g, ' ').trim();
+}
 
-        // Try to read the line above designation first
-        if (desigLineIdx > 0) {
-            let currentLine = lines[desigLineIdx - 1].trim();
-            currentLine = currentLine.replace(/(?:OFFICE|OF|THE|CGM|BSNL|TRIVANDRUM|KERALA|CIRCLE|TVM)/ig, '');
-            name = currentLine.replace(/[^A-Za-z\s\.]/g, '').replace(/\s+/g, ' ').trim();
-        }
+// BSNL EMPLOYEE LOOKUP DICTIONARY
+// Only define cleanText ONCE here
+const cleanText = normalized.replace(/[^A-Z0-9]/g, '');
 
-        // BSNL EMPLOYEE LOOKUP DICTIONARY
-        // If the stamp messes up the name, we use the perfect HR or PAN number to fix it!
-        const cleanText = normalized.replace(/[^A-Z0-9]/g, '');
+if (cleanText.includes("201002909") || cleanText.includes("AURPA5585D")) {
+    name = "MUHSINA. A. N";
+    setField('hr-number', "201002909");
+    setField('tel-mobile', "9486101153")
+} else if (cleanText.includes("200200610") || cleanText.includes("AMXPB9346D")) {
+    name = "BINU KUMAR.M";
+    setField('hr-number', "200200610");
+    setField('tel-mobile', "9447041200")
+} else if (cleanText.includes("199803161") || cleanText.includes("ACTPT6444Q")) {
+    name = "SREELETHA.T";
+    setField('hr-number', "199803161");
+    setField('tel-mobile', "9447660043")
+}
 
-        if (cleanText.includes("201002909") || cleanText.includes("AURPA5585D")) {
-            name = "MUHSINA. A. N";
-        } else if (cleanText.includes("200200610") || cleanText.includes("AMXPB9346D")) {
-            name = "BINU KUMAR.M";
-        }
-        // You can easily add more employees here later like this:
-        // else if (cleanText.includes("YOUR_HR_NUMBER")) { name = "EXACT NAME"; }
-
-        // Drop the final clean name and title into the form!
-        if (name) setField('name', name.toUpperCase().trim());
-        if (designation) setField('designation', designation);
-
+// Drop the final clean name and title into the form!
+if (name) setField('name', name.toUpperCase().trim());
+if (designation) setField('designation', designation);
         // 6. Office Address
         setField('office-address', 'RTTC TVM');
 
        
-        // 8. Mobile Number - Clean Room Parser
-        let mobileNum = '';
-        const telMobileInput = document.getElementById('tel-mobile');
-
-        if (telMobileInput) { 
-            telMobileInput.value = ''; 
-            telMobileInput.classList.remove('has-value'); 
-        }
-
-        // Search the text for the "94" pattern
-        // This looks for 94 followed by any 8 digits
-        let rawText = text.replace(/[^0-9]/g, ''); 
-        let match = rawText.match(/94[0-9]{8}/);
-
-        if (match) {
-            mobileNum = match[0];
-        }
-
-        // Apply to field
-        if (mobileNum && telMobileInput) {
-            telMobileInput.value = mobileNum;
-            telMobileInput.classList.add('has-value');
-        }
+        
     }
 });

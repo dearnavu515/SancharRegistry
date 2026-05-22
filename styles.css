@@ -322,13 +322,7 @@ body {
     transform: translateY(1px);
 }
 
-/* Validation */
-.input-group input:invalid:not(:placeholder-shown):not(:focus) {
-    border-color: var(--error-color);
-}
-.input-group input:invalid:not(:placeholder-shown):not(:focus) + label {
-    color: var(--error-color);
-}
+
 
 /* OCR Auto-Fill Section */
 .highlight-section {
@@ -485,14 +479,14 @@ body {
     font-size: 0.95rem;
 }
 
-.ocr-status.active {
+.ocr-status.active { 
     display: flex;
 }
 
 .spinner-small {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(255,102,0, 0.3);
+    border: 2px solid rgba(148, 146, 144, 0.3);
     border-radius: 50%;
     border-top-color: var(--bsnl-orange);
     animation: spin 1s ease-in-out infinite;

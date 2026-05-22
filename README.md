@@ -4,15 +4,13 @@ A professional employee registration portal for Bharat Sanchar Nigam Limited (BS
 
 ## Features
 - **Official BSNL Branding**: Clean, modern web UI with official colors (Deep Blue & Orange), responsive grid layouts, and active feedback states.
-- **AI-Powered OCR Auto-Fill**: Upload the front and back of your BSNL employee ID card to automatically parse and populate details (Name, DOB, PAN, HR Number, Blood Group) using Tesseract.js.
-- **Intelligent Signature Cropping**: Automatically extracts the signature image from the front BSNL ID card using HTML5 canvas-based cropping. Alternatively, users can upload their signature image manually.
+- **AI-Powered OCR Auto-Fill**: Upload the front and back of your BSNL employee ID card to automatically parse and populate details (Name, DOB, PAN, HR Number) using Tesseract.js.
 - **Zero-Setup Database (SQLite)**: Submissions and signature base64 images are saved locally in a `database.sqlite` file inside the project directory.
 - **Admin Database Viewer**: An intuitive `admin.html` web dashboard to view, browse, and delete employee records from the database, featuring signature thumbnails that dynamically zoom on hover.
 
 ## Key Innovations & Novelties
 
 This portal is distinct from standard database forms thanks to the following technical and design implementations:
-- **Intelligent Canvas-Based Signature Cropping**: Instead of forcing users to manually crop or upload their signatures separately, the application programmatically crops the signature region (bottom-right) of the Front ID card in the background using HTML5 Canvas.
 - **Client-Side AI OCR (Tesseract.js Integration)**: The application features native Optical Character Recognition (OCR) running completely on the client side using **Tesseract.js**. By executing the OCR engine locally inside the user's browser, employee ID card images are scanned and parsed instantly. This eliminates server processing overhead, protects employee data privacy by keeping document uploads local, and enables smooth auto-fill capability without external cloud API dependencies.
 - **Zero-Setup Database Architecture**: Built using a local **SQLite** server-less database file (`database.sqlite`). This eliminates complex external database server setups (such as MySQL/Postgres), allowing the project to run out-of-the-box in seconds.
 - **Fuzzy Date & Detail Matching**: Relies on specific Regex parsers to intelligently search raw scanned card text for BSNL HR format structures, PAN card strings, and various Date of Birth formats (dynamically converting them to `YYYY-MM-DD` standard inputs).
@@ -42,7 +40,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
    *You should see:*
    `Backend server running on http://localhost:3001`
    `Connected to the SQLite database`
-
+ 
 ### Using the Applications
 - Open **`index.html`** in your browser to access the registration portal. Fill in the details (or use the ID Card Auto-Fill) and submit.
 - Open **`admin.html`** in your browser to view all saved records and delete entries.

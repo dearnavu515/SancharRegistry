@@ -40,9 +40,23 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
    node server.js
    ```
    *You should see:*
-   `Backend server running on http://localhost:3000`
+   `Backend server running on http://localhost:3001`
    `Connected to the SQLite database`
 
 ### Using the Applications
 - Open **`index.html`** in your browser to access the registration portal. Fill in the details (or use the ID Card Auto-Fill) and submit.
 - Open **`admin.html`** in your browser to view all saved records and delete entries.
+
+## Project Visuals
+
+### Main User Interface
+![UI](Screenshots/1_ui.png)
+
+### ID Card Upload
+![Upload](Screenshots/2_upload_image.png)
+
+### Auto-Fill in Progress
+![Auto-Fill](Screenshots/3_autofill_in_process.png)
+
+### Admin Database View
+![Database](Screenshots/4_database.png)
